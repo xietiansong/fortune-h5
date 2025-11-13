@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日一点 · 今日运势</title>
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(160deg, #fceabb 0%, #f8b500 100%);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      text-align: center;
+    }
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 30px;
+    }
+    button {
+      background: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+    }
+    button:hover {
+      background: #ffe48a;
+      transform: scale(1.05);
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 1.3em;
+      font-weight: bold;
+      min-height: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌟 今日运势抽签 🌟</h1>
+  <button onclick="showFortune()">点击查看今日运势</button>
+  <div id="result"></div>
+
+  <script>
+    const fortunes = [
+      "🌞 大吉：贵人相助，诸事顺心。",
+      "🌈 吉：好事将近，心怀希望。",
+      "🍃 平：静守初心，自然安然。",
+      "🔥 小凶：注意休息，少些急躁。",
+      "🌧 凶：宜静不宜动，等待转机。",
+      "🌸 幸运：灵感闪现，适合尝试新事物。",
+      "💫 成长：经历考验，收获坚韧。"
+    ];
+
+    function showFortune() {
+      // 使用日期种子保证每天相同
+      const today = new Date().toISOString().slice(0,10);
+      const seed = parseInt(today.replace(/-/g, ''));
+      const index = (seed + Math.floor(Math.random() * 100)) % fortunes.length;
+
+      const fortune = fortunes[index];
+      document.getElementById("result").innerHTML = fortune;
+    }
+  </script>
+</body>
+</html>
