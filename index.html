@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>每日一点 · 今日运势</title>
+  
+  <!-- 分享优化 -->
+  <meta property="og:title" content="每日一点 · 今日运势">
+  <meta property="og:description" content="点击查看你的每日运势签文！">
+  <meta property="og:image" content="https://yourimageurl.com/fortune.png">
+  <meta property="og:type" content="website">
+  
   <style>
     body {
       font-family: "微软雅黑", sans-serif;
@@ -49,6 +56,7 @@
   <div id="result"></div>
 
   <script>
+    // 运势内容数组
     const fortunes = [
       "🌞 大吉：贵人相助，诸事顺心。",
       "🌈 吉：好事将近，心怀希望。",
@@ -60,11 +68,8 @@
     ];
 
     function showFortune() {
-      // 使用日期种子保证每天相同
-      const today = new Date().toISOString().slice(0,10);
-      const seed = parseInt(today.replace(/-/g, ''));
-      const index = (seed + Math.floor(Math.random() * 100)) % fortunes.length;
-
+      // 随机选择一个运势
+      const index = Math.floor(Math.random() * fortunes.length);
       const fortune = fortunes[index];
       document.getElementById("result").innerHTML = fortune;
     }
