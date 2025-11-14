@@ -3,75 +3,158 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>每日一点 · 今日运势</title>
-  
-  <!-- 分享优化 -->
-  <meta property="og:title" content="每日一点 · 今日运势">
-  <meta property="og:description" content="点击查看你的每日运势签文！">
-  <meta property="og:image" content="https://yourimageurl.com/fortune.png">
-  <meta property="og:type" content="website">
-  
+  <title>今日易签 · 每日一点</title>
+
   <style>
     body {
       font-family: "微软雅黑", sans-serif;
       background: linear-gradient(160deg, #fceabb 0%, #f8b500 100%);
-      height: 100vh;
       margin: 0;
+      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #333;
+      min-height: 100vh;
       text-align: center;
     }
     h1 {
-      font-size: 1.8em;
-      margin-bottom: 30px;
+      font-size: 2rem;
+      margin-top: 30px;
     }
     button {
       background: #fff;
       border: none;
       padding: 12px 24px;
       border-radius: 25px;
-      font-size: 1.1em;
+      font-size: 1.2rem;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      transition: all 0.3s;
+      transition: 0.3s;
+      margin-top: 20px;
     }
     button:hover {
-      background: #ffe48a;
       transform: scale(1.05);
+      background: #ffe48a;
     }
     #result {
       margin-top: 30px;
-      font-size: 1.3em;
+      font-size: 1.3rem;
       font-weight: bold;
-      min-height: 40px;
+      min-height: 120px;
+      width: 80%;
+      max-width: 400px;
+      background: rgba(255,255,255,0.7);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      line-height: 1.5;
+    }
+    .luck {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+    .name {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .text {
+      font-size: 1rem;
     }
   </style>
 </head>
+
 <body>
-  <h1>🌟 今日运势抽签 🌟</h1>
-  <button onclick="showFortune()">点击查看今日运势</button>
+  <h1>🔮 今日易签 · 点击抽取你的运势</h1>
+
+  <button onclick="draw()">抽签</button>
+
   <div id="result"></div>
 
   <script>
-    // 运势内容数组
     const fortunes = [
-      "🌞 大吉：贵人相助，诸事顺心。",
-      "🌈 吉：好事将近，心怀希望。",
-      "🍃 平：静守初心，自然安然。",
-      "🔥 小凶：注意休息，少些急躁。",
-      "🌧 凶：宜静不宜动，等待转机。",
-      "🌸 幸运：灵感闪现，适合尝试新事物。",
-      "💫 成长：经历考验，收获坚韧。"
+      { name: "乾卦", luck: "大吉", text: "🌞 天帮你，你帮自己，今天就是主角。" },
+      { name: "坤卦", luck: "吉", text: "🌏 放轻松，顺势而为就能成事。" },
+      { name: "屯卦", luck: "中", text: "🌱 开局有点难，但坚持下去就是春天。" },
+      { name: "蒙卦", luck: "中", text: "📘 多学一点，就少走很多弯路。" },
+      { name: "需卦", luck: "吉", text: "⏳ 耐心点，等待中的礼物很快会到。" },
+      { name: "讼卦", luck: "凶", text: "⚔️ 别急着争，退一步会更顺。" },
+      { name: "师卦", luck: "中", text: "🪖 团队力量强，但规矩也要记住。" },
+      { name: "比卦", luck: "吉", text: "🤝 靠朋友，靠伙伴，合作最旺。" },
+
+      { name: "小畜卦", luck: "吉", text: "💼 小小积累，正是未来的大惊喜。" },
+      { name: "履卦", luck: "吉", text: "👣 踏稳每一步，幸运就在不远处。" },
+      { name: "泰卦", luck: "大吉", text: "🎉 顺风顺水，今天你就是幸运之子。" },
+      { name: "否卦", luck: "凶", text: "🚫 暂时不顺，先避避风头再说。" },
+      { name: "同人卦", luck: "吉", text: "👥 和志同道合的人一起，就会更强。" },
+      { name: "大有卦", luck: "大吉", text: "💰 满仓好运，收获满满的一天。" },
+      { name: "谦卦", luck: "吉", text: "😌 越谦虚，越走运。" },
+      { name: "豫卦", luck: "吉", text: "🎶 心情好，做什么都顺。" },
+
+      { name: "随卦", luck: "吉", text: "🌈 顺着走，会比你想的更容易成功。" },
+      { name: "蛊卦", luck: "中", text: "🧹 清理旧事，才能迎来新好运。" },
+      { name: "临卦", luck: "吉", text: "🔔 机会到门口了，准备接住它。" },
+      { name: "观卦", luck: "中", text: "👀 先看看，再决定，不吃亏。" },
+      { name: "噬嗑卦", luck: "吉", text: "🔥 硬仗一下反而能突破。" },
+      { name: "贲卦", luck: "吉", text: "🌺 形象提升，适合展示自己。" },
+      { name: "剥卦", luck: "凶", text: "📉 别冒进，保持实力最重要。" },
+      { name: "复卦", luck: "吉", text: "🔄 失去的会回来，新的开始正在路上。" },
+
+      { name: "无妄卦", luck: "吉", text: "💎 做真实的你，最能吸好运。" },
+      { name: "大畜卦", luck: "吉", text: "📦 累积力量，时机一来就能大爆发。" },
+      { name: "颐卦", luck: "中", text: "🍵 养好身体，好运自然上门。" },
+      { name: "大过卦", luck: "凶", text: "🪵 压力太大，先休息一下再说。" },
+      { name: "坎卦", luck: "凶", text: "🌧 今天关卡多，多一分谨慎少一分麻烦。" },
+      { name: "离卦", luck: "吉", text: "🔥 光芒四射，适合表达与创造。" },
+      { name: "咸卦", luck: "吉", text: "💞 感情运走高。" },
+      { name: "恒卦", luck: "吉", text: "📆 坚持的人最幸运。" },
+
+      { name: "遯卦", luck: "中", text: "🏃‍♂️💨 退一步，是为了更好的出击。" },
+      { name: "大壮卦", luck: "吉", text: "💪 状态强劲，但别冲太猛。" },
+      { name: "晋卦", luck: "吉", text: "📈 步步高升，事业运旺。" },
+      { name: "明夷卦", luck: "凶", text: "🕯 低调点更安全。" },
+      { name: "家人卦", luck: "吉", text: "🏠 家庭稳，心也顺。" },
+      { name: "睽卦", luck: "中", text: "🔀 想法不合，多沟通就好。" },
+      { name: "蹇卦", luck: "凶", text: "🧊 阻力大，今天不适合冒险。" },
+      { name: "解卦", luck: "吉", text: "🌤 压力散去，事情开始顺了。" },
+
+      { name: "损卦", luck: "中", text: "➖ 少一点反而好一点。" },
+      { name: "益卦", luck: "吉", text: "🎁 多付出，多得到。" },
+      { name: "夬卦", luck: "中", text: "✂️ 决断很重要，但别太急。" },
+      { name: "姤卦", luck: "凶", text: "⚠️ 突如其来的挑战，需要防范。" },
+      { name: "萃卦", luck: "吉", text: "👑 人气上涨，适合领导与聚集。" },
+      { name: "升卦", luck: "吉", text: "🌿 稳稳往上，运势越来越好。" },
+      { name: "困卦", luck: "凶", text: "🪤 有点憋屈的一天，但会过去。" },
+      { name: "井卦", luck: "吉", text: "🪣 基础稳固，资源充足。" },
+
+      { name: "革卦", luck: "吉", text: "🔄 改变会带来新好运。" },
+      { name: "鼎卦", luck: "大吉", text: "🏆 好运爆棚，成果满满。" },
+      { name: "震卦", luck: "中", text: "⚡ 虽有惊动，但能化险为夷。" },
+      { name: "艮卦", luck: "中", text: "🧘 停下来，反而更看得清。" },
+      { name: "渐卦", luck: "吉", text: "🕊 慢慢来就很好。" },
+      { name: "归妹卦", luck: "凶", text: "⛔ 条件不足，事情容易翻车。" },
+      { name: "丰卦", luck: "吉", text: "🎆 状态极佳，是展现自我的好时机。" },
+      { name: "旅卦", luck: "中", text: "🎒 在路上，也要稳稳地。" },
+
+      { name: "巽卦", luck: "吉", text: "🍃 以柔克刚，沟通顺利。" },
+      { name: "兑卦", luck: "吉", text: "😄 心情好，运气旺。" },
+      { name: "涣卦", luck: "吉", text: "💨 烦恼散了，心更轻。" },
+      { name: "节卦", luck: "中", text: "⚖️ 掌握分寸就是好运秘诀。" },
+      { name: "中孚卦", luck: "吉", text: "🤍 真诚能打开所有门。" },
+      { name: "小过卦", luck: "中", text: "🎯 小事可成，大事宜缓。" },
+      { name: "既济卦", luck: "吉", text: "✔️ 事情已成功，只要收尾。" },
+      { name: "未济卦", luck: "中", text: "🔥 快成功了，再坚持一下！" }
     ];
 
-    function showFortune() {
-      // 随机选择一个运势
-      const index = Math.floor(Math.random() * fortunes.length);
-      const fortune = fortunes[index];
-      document.getElementById("result").innerHTML = fortune;
+    function draw() {
+      const i = Math.floor(Math.random() * fortunes.length);
+      const f = fortunes[i];
+
+      document.getElementById("result").innerHTML = `
+        <div class="luck">✨ ${f.luck}</div>
+        <div class="name">【${f.name}】</div>
+        <div class="text">${f.text}</div>
+      `;
     }
   </script>
 </body>
