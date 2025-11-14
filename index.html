@@ -1,61 +1,191 @@
-<script>
-  /** 64 卦签文（省略，这部分保持不变） **/
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>每日一点 · 今日运势</title>
 
-  /** 工具：获取今天 YYYY-MM-DD */
-  function getToday() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-  }
-
-  /** 今日运势：一天只能抽一次 */
-  function showFortune() {
-    const today = getToday();
-    const savedDate = localStorage.getItem("fortune_date");
-    const savedFortune = localStorage.getItem("fortune_text");
-
-    // 如果今天抽过，直接显示结果
-    if (savedDate === today && savedFortune) {
-      document.getElementById("fortune-result").innerHTML =
-        "（今日已抽）<br>" + savedFortune;
-      return;
+  <style>
+    body {
+      font-family: "微软雅黑", sans-serif;
+      background: linear-gradient(160deg, #fceabb 0%, #f8b500 100%);
+      margin: 0;
+      padding: 30px 20px;
+      text-align: center;
     }
 
-    // 第一次抽：随机生成并保存
-    const index = Math.floor(Math.random() * fortunes.length);
-    const fortune = fortunes[index];
-
-    localStorage.setItem("fortune_date", today);
-    localStorage.setItem("fortune_text", fortune);
-
-    document.getElementById("fortune-result").innerHTML = fortune;
-  }
-
-  /** 今日是否宜投稿：一天只能抽一次 */
-  function checkSubmit() {
-    const today = getToday();
-    const savedDate = localStorage.getItem("submit_date");
-    const savedSubmit = localStorage.getItem("submit_text");
-
-    if (savedDate === today && savedSubmit) {
-      document.getElementById("submit-result").innerHTML =
-        "（今日已查看）<br>" + savedSubmit;
-      return;
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
     }
 
-    // 第一次抽：随机生成
-    const options = [
-      "🟢【宜投稿】状态良好、思路清晰！非常适合投稿～📨",
-      "🟡【可投稿】灵感一般，但若方向明确可以一试～✍️",
-      "🔴【不宜投稿】状态波动，建议明天再来～😴",
-      "🟢【宜投稿】今天表达力 UP↑！投稿成功率大增！🔥",
-      "🔴【不宜投稿】容易粗心或卡顿，适合整理资料。📂"
+    button {
+      background: #fff;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 25px;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #ffe48a;
+      transform: scale(1.05);
+    }
+
+    .result-box {
+      margin-top: 25px;
+      font-size: 1.25em;
+      font-weight: bold;
+      min-height: 40px;
+      padding: 10px;
+    }
+
+    .subtitle {
+      margin-top: 40px;
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #444;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🌟 今日运势抽签 🌟</h1>
+
+  <button onclick="showFortune()">点击抽取今日运势</button>
+  <div id="fortune-result" class="result-box"></div>
+
+  <div class="subtitle">📝 今日是否宜投稿？</div>
+  <button onclick="checkSubmit()">点击查看投稿建议</button>
+  <div id="submit-result" class="result-box"></div>
+
+  <script>
+    /* ========= 64卦签文（emoji + 吉凶） ========= */
+    const fortunes = [
+      "✨【大吉】乾卦：天行健，自强不息，必有收获！",
+      "🌈【吉】坤卦：大地承载，厚积薄发，稳中有进。",
+      "⚡【吉】屯卦：新局开启，虽有阻力，但前景光明。",
+      "🌱【中】蒙卦：学习成长之象，不宜急躁。",
+      "🚪【小凶】需卦：时机未到，宜等待。",
+      "🌧【凶】讼卦：纷争难免，宜避其锋。",
+      "🔥【吉】师卦：团结协作，力量倍增。",
+      "🌀【中】比卦：需要伙伴支持，但不宜盲目依赖。",
+      "🌤【吉】小畜：积少成多，稳步前行。",
+      "🌪【凶】履卦：行事需谨慎，勿踩雷区。",
+      "🌞【大吉】泰卦：天地交泰，万象更新。",
+      "☯️【凶】否卦：闭塞不通，不宜冒进。",
+      "🚀【吉】同人：合作共赢，适合拓展。",
+      "🧊【中】大有：虽丰收，但需冷静。",
+      "🌬【凶】谦卦：放低姿态可避祸。",
+      "🏔【吉】豫卦：顺势而为，自在舒展。",
+      "💡【中】随卦：应势随机，但要保持原则。",
+      "🚧【小凶】蛊卦：旧事缠身，需清理。",
+      "🌟【大吉】临卦：吉祥降临，好运将至！",
+      "🔄【中】观卦：观察等待，明辨是非。",
+      "🏹【吉】噬嗑：突破阻碍，见光明。",
+      "🌫【凶】贲卦：外亮内虚，不宜装饰。",
+      "⏳【中】剥卦：事物走下坡，宜保存实力。",
+      "🔥【大吉】复卦：否极泰来，新周期开启！",
+      "🌧【凶】无妄：事情反复，不宜强求。",
+      "🐢【中】大畜：储备能量，不宜冒进。",
+      "🌕【吉】颐卦：修身养性，自成好运。",
+      "🌊【凶】大过：压力过重，需卸载。",
+      "📈【吉】坎卦：困境中反而有机会。",
+      "⛰【中】离卦：虚实相间，要保持清醒。",
+      "🌅【大吉】咸卦：事事相感，心想事成！",
+      "📌【中】恒卦：保持稳定即可见好。",
+      "🌪【小凶】遁卦：宜退不宜进。",
+      "🧭【吉】大壮：力量增长，把握时机！",
+      "🛡【中】晋卦：稳步上升，不宜骄傲。",
+      "💼【凶】明夷：暂时低调，避风头。",
+      "🌤【吉】家人：适合处理家庭与人际。",
+      "📚【中】睽卦：分歧较多，宜沟通。",
+      "🌀【凶】蹇卦：阻碍多，宜慢行。",
+      "🌱【吉】解卦：困难化解，顺势而成。",
+      "🙏【吉】损卦：舍得之后有所得。",
+      "🎁【大吉】益卦：福泽到来，喜事临门！",
+      "🔥【吉】夬卦：果断决策可成大事。",
+      "🌧【凶】姤卦：突发情况，不宜独断。",
+      "🌙【中】萃卦：适合集合力量做事。",
+      "📊【吉】升卦：节节高升，好运持续。",
+      "🛑【凶】困卦：多不顺，少行动。",
+      "⚖️【吉】井卦：根基稳固，可安心推进。",
+      "🌩【凶】革卦：需要变化，但过程艰辛。",
+      "📣【中】鼎卦：可成大事，但需坚持。",
+      "🧠【吉】震卦：灵感涌现，有突破。",
+      "🍃【中】艮卦：停下来才看得更清。",
+      "🌤【吉】渐卦：缓步稳进，终见成果。",
+      "💫【大吉】归妹卦：新事物带来好运气！",
+      "🌀【小凶】丰卦：太强易折，收敛锋芒。",
+      "🌊【凶】旅卦：漂浮不定，不宜远行。",
+      "🔧【中】巽卦：柔中带刚，可顺利推进。",
+      "🎯【吉】兑卦：心情愉悦，顺心顺意。",
+      "☁️【凶】涣卦：注意分散精力的问题。",
+      "🏆【大吉】节卦：收放得宜，好事自来！",
+      "📉【凶】中孚：信任受考验，宜谨慎。",
+      "🌞【大吉】小过：小调整换来大提升！",
+      "🌪【小凶】既济：表面成功，暗藏风险。",
+      "🌧【凶】未济：事情未完成，宜再等等。"
     ];
 
-    const res = options[Math.floor(Math.random() * options.length)];
+    /* ========= 工具：获取 YYYY-MM-DD ========= */
+    function getToday() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    }
 
-    localStorage.setItem("submit_date", today);
-    localStorage.setItem("submit_text", res);
+    /* ========= 今日运势：每天一次 ========= */
+    function showFortune() {
+      const today = getToday();
+      const savedDate = localStorage.getItem("fortune_date");
+      const savedFortune = localStorage.getItem("fortune_text");
 
-    document.getElementById("submit-result").innerHTML = res;
-  }
-</script>
+      if (savedDate === today && savedFortune) {
+        document.getElementById("fortune-result").innerHTML =
+          "（今日已抽）<br>" + savedFortune;
+        return;
+      }
+
+      const index = Math.floor(Math.random() * fortunes.length);
+      const fortune = fortunes[index];
+
+      localStorage.setItem("fortune_date", today);
+      localStorage.setItem("fortune_text", fortune);
+
+      document.getElementById("fortune-result").innerHTML = fortune;
+    }
+
+    /* ========= 今日投稿建议：每天一次 ========= */
+    function checkSubmit() {
+      const today = getToday();
+      const savedDate = localStorage.getItem("submit_date");
+      const savedSubmit = localStorage.getItem("submit_text");
+
+      if (savedDate === today && savedSubmit) {
+        document.getElementById("submit-result").innerHTML =
+          "（今日已查看）<br>" + savedSubmit;
+        return;
+      }
+
+      const options = [
+        "🟢【宜投稿】状态良好、思路清晰！非常适合投稿～📨",
+        "🟡【可投稿】灵感一般，但若方向明确可以一试～✍️",
+        "🔴【不宜投稿】状态波动，建议明天再来～😴",
+        "🟢【宜投稿】今天表达力 UP↑！投稿成功率大增！🔥",
+        "🔴【不宜投稿】容易粗心或卡顿，适合整理资料。📂"
+      ];
+
+      const res = options[Math.floor(Math.random() * options.length)];
+
+      localStorage.setItem("submit_date", today);
+      localStorage.setItem("submit_text", res);
+
+      document.getElementById("submit-result").innerHTML = res;
+    }
+  </script>
+</body>
+</html>
